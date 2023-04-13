@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -euo pipefail
+
+scriptdir="$(cd "$(dirname "$0")" && pwd -P)"
+cd "$(dirname "$scriptdir")"
+
+found=0
+for PYTHON in python3 python; do
+    if command -v "$PYTHON" &>/dev/null && "$PYTHON" -V &>/dev/null; then
+        found=1
+        break
+    fi
+done
+if [ $found -eq 0 ]; then
+    echo >&2 "Error: python not found"
+    exit 1
+fi
+
+USER_BIN="$($PYTHON -c 'import os,site,sys; print("{}\\Python{}{}\\Scripts".format(site.getuserbase(), sys.version_info[0], sys.version_info[1]) if os.name == "nt" else "{}/bin".format(site.getuserbase()))')"
+PATH="$USER_BIN:$PATH"
+
+$PYTHON -m pip --disable-pip-version-check install --quiet --user poetry nox nox-poetry
+poetry install

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euo pipefail
+
+scriptdir="$(cd "$(dirname "$0")" && pwd -P)"
+cd "$(dirname "$scriptdir")"
+
+poetry run black ./*/
+poetry run isort ./*/
