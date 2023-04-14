@@ -48,6 +48,9 @@ myst-parser = {version = ">=0.16.1"}
 [tool.poetry.scripts]
 archive-cp = "archive_cp.__main__:main"
 
+[tool.bandit.assert_used]
+skips = ["*/test_*.py"]
+
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 tests = ["tests", "*/tests"]
