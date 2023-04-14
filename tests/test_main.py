@@ -12,6 +12,6 @@ def runner() -> CliRunner:
 
 
 def test_main_succeeds(runner: CliRunner) -> None:
-    """It exits with a status code of zero."""
+    """It exits with a status code of two when no arguments are passed."""
     result = runner.invoke(__main__.main)
-    assert result.exit_code == 0
+    assert result.exit_code == 2
