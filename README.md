@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/pypi/l/archive-cp)][license]
 
 [![The Ethical Source Principles](https://img.shields.io/badge/ethical-source-%23bb8c3c?labelColor=393162)][ethical source]
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)][contributor covenant]
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)][codeofconduct]
 [![Read the documentation at https://archive-cp.readthedocs.io/](https://img.shields.io/readthedocs/archive-cp/latest.svg?label=Read%20the%20Docs)][read the docs]
 [![Tests](https://github.com/kergoth/archive-cp/workflows/Tests/badge.svg)][tests]
 [![Codecov](https://codecov.io/gh/kergoth/archive-cp/branch/main/graph/badge.svg)][codecov]
@@ -16,7 +16,6 @@
 
 [pypi status]: https://pypi.org/project/archive-cp/
 [ethical source]: https://ethicalsource.dev/principles/
-[contributor covenant]: CODE_OF_CONDUCT.md
 [read the docs]: https://archive-cp.readthedocs.io/
 [tests]: https://github.com/kergoth/archive-cp/actions?workflow=Tests
 [codecov]: https://app.codecov.io/gh/kergoth/archive-cp
@@ -73,3 +72,4 @@ This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter]
 [license]: https://github.com/kergoth/archive-cp/blob/main/LICENSE
 [contributor guide]: https://github.com/kergoth/archive-cp/blob/main/CONTRIBUTING.md
 [command-line reference]: https://archive-cp.readthedocs.io/en/latest/usage.html
+[codeofconduct]: https://github.com/kergoth/archive-cp/blob/main/CODE_OF_CONDUCT.md
