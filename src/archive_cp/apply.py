@@ -22,7 +22,12 @@ def transition_state(
     in_target, external = [], []
     for newname, path in new_state.items():
         if is_relative_to(path, target_directory):
-            in_target.append((newname, path))
+            relpath = path.relative_to(target_directory)
+            if newname == relpath:
+                if debug:
+                    log(f"skipped {path} (nothing to do)")
+                else:
+                    in_target.append((newname, path))
         else:
             external.append((newname, path))
 
@@ -34,22 +39,17 @@ def transition_state(
         postponed = []
 
         for newname, path in in_target:
-            relpath = path.relative_to(target_directory)
-            if newname == relpath:
-                if debug:
-                    log(f"skipped {path} (nothing to do)")
-            else:
-                dest = target_directory / newname
-                if not dry_run:
-                    if newname in old_state:
-                        tmpfile = pathlib.Path(tempdir.name) / newname.name
-                        link_file(path, tmpfile)
-                        postponed.append((path, tmpfile, dest))
-                    else:
-                        os.rename(path, dest)
+            dest = target_directory / newname
+            if not dry_run:
+                if newname in old_state:
+                    tmpfile = pathlib.Path(tempdir.name) / newname.name
+                    link_file(path, tmpfile)
+                    postponed.append((path, tmpfile, dest))
+                else:
+                    os.rename(path, dest)
 
-                        if verbose or dry_run:
-                            log(f"renamed '{path}' -> '{dest}'")
+                    if verbose or dry_run:
+                        log(f"renamed '{path}' -> '{dest}'")
 
         for path, tmpfile, dest in postponed:
             os.rename(tmpfile, dest)
