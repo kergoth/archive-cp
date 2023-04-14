@@ -89,16 +89,16 @@ def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None
         yield block
 
 
-def base_name(name: StrPath) -> Optional[str]:
+def base_name(name: StrPath) -> pathlib.Path:
     """Return the base name, undoing the timestamp suffixes resulting from this script."""
     for pattern in [ADJUSTED_FN_TIME_CHKSUM, ADJUSTED_FN_TIME]:
         m = pattern.match(str(name))
         if m:
             if m.group(2):
-                return m.group(1) + m.group(2)
+                name = m.group(1) + m.group(2)
             else:
-                return m.group(1)
-    return None
+                name = m.group(1)
+    return pathlib.Path(name)
 
 
 def file_destination(

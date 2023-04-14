@@ -51,10 +51,8 @@ def prepare_file_operations(
         by_mtime = list(sorted(files, key=lambda f: mtime(f), reverse=True))
         newest = by_mtime[0]
 
-        newest_base = pathlib.Path(base_name(newest.name) or newest.name)
-        new_state = {newest_base: newest}
-
         uniques, discarded = unique_names(by_mtime[1:], timefunc=mtime)
+        new_state = {base_name(newest.name): newest}
         new_state.update(uniques)
         unselected.extend(discarded)
 
@@ -89,8 +87,7 @@ def unique_names(
     # Group by the source file base name, not the normalized relpath,
     # thereby ensuring we don't force everything to lowercase.
     for path in paths:
-        name = pathlib.Path(base_name(path.name) or path.name)
-        by_name[name].append(path)
+        by_name[base_name(path.name)].append(path)
 
     increase_uniqueness(
         by_name, uniques, lambda p, n: add_time_stem_suffix(p, n, timefunc)
