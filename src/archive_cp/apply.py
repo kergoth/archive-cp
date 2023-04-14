@@ -70,11 +70,7 @@ def transition_state(
         if verbose or dry_run:
             log(f"'{path}' -> '{dest}'")
 
-    to_remove = (
-        set(old_state)
-        - set(new_state.keys())
-        - {v.relative_to(target_directory) for k, v in in_target}
-    )
+    to_remove = set(old_state) - set(new_state.keys()) - {v for k, v in in_target}
     for path in to_remove:
         if path.exists():
             if not dry_run:
