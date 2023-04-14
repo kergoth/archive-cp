@@ -48,6 +48,10 @@ myst-parser = {version = ">=0.16.1"}
 [tool.poetry.scripts]
 archive-cp = "archive_cp.__main__:main"
 
+[tool.bandit]
+# Subprocess is used with care, disable B404, B603
+skips = ['B404', 'B603']
+
 [tool.bandit.assert_used]
 skips = ["*/test_*.py"]
 
