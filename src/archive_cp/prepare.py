@@ -51,11 +51,10 @@ def prepare_file_operations(
         by_mtime = list(sorted(files, key=lambda f: mtime(f), reverse=True))
         newest = by_mtime[0]
 
-        basename = pathlib.Path(relpath.name)
-        uniques, discarded = unique_names(by_mtime[1:], basename, timefunc=mtime)
-
         newest_base = pathlib.Path(base_name(newest.name) or newest.name)
         new_state = {newest_base: newest}
+
+        uniques, discarded = unique_names(by_mtime[1:], timefunc=mtime)
         new_state.update(uniques)
         unselected.extend(discarded)
 
@@ -79,7 +78,7 @@ def deduplicate(
 
 
 def unique_names(
-    paths: Sequence[pathlib.Path], basename: pathlib.Path, timefunc: TimeFunc
+    paths: Sequence[pathlib.Path], timefunc: TimeFunc
 ) -> Tuple[Dict[pathlib.Path, pathlib.Path], Sequence[pathlib.Path]]:
     uniques: Dict[pathlib.Path, pathlib.Path] = {}
     by_name: MutableMapping[
