@@ -4,7 +4,8 @@ from typing import List
 from typing import Tuple
 
 from archive_cp.fileutils import sha256sum
-from archive_cp.group import base_name, duplicate_groups
+from archive_cp.group import base_name
+from archive_cp.group import duplicate_groups
 from archive_cp.pathutils import is_relative_to
 from archive_cp.pathutils import mtime
 

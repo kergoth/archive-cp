@@ -72,7 +72,7 @@ def transition_state(
     to_remove = (
         set(old_state)
         - set(new_state.keys())
-        - set(v.relative_to(target_directory) for k, v in in_target)
+        - {v.relative_to(target_directory) for k, v in in_target}
     )
     for path in to_remove:
         if path.exists():
