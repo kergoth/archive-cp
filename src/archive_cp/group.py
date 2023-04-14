@@ -29,6 +29,7 @@ def duplicate_groups(
     ignore_case: bool = False,
     quiet: bool = False,
 ) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
+    """Run fclones on the source paths, returning groups of paths by relative destination path."""
     by_dest = collections.defaultdict(list)
     paths = sources.keys()
     grouped = fclones(paths, suppress_err=quiet)
@@ -62,6 +63,7 @@ def fclones(
     suppress_err: bool = False,
     args: Optional[List[str]] = None,
 ) -> Generator[Sequence[pathlib.Path], None, None]:
+    """Run fclones on the specified files, returning a list of groups of file paths."""
     if args is None:
         args = ["-H", "--rf-over=0", "--min=0"]
 
@@ -75,6 +77,7 @@ def fclones(
 
 
 def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None]:
+    """Parse the output of fclones using 'fdupes' format into a list of groups of file paths."""
     block: List[pathlib.Path] = []
     for line in output.splitlines():
         line = line.rstrip("\r\n")
@@ -104,6 +107,7 @@ def base_name(name: StrPath) -> pathlib.Path:
 def file_destination(
     filepath: pathlib.Path, sources: Mapping[pathlib.Path, pathlib.Path]
 ) -> pathlib.Path:
+    """Determine the appropriate destination for a given filepath, obeying sources."""
     if filepath in sources:
         return sources[filepath]
     else:

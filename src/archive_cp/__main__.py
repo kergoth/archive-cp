@@ -14,6 +14,8 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 class Verbosity(Enum):
+    """Verbosity level of the tool."""
+
     Quiet = -1
     Normal = 0
     Verbose = 1
@@ -74,6 +76,13 @@ def main(
     dry_run: bool,
     ignore_case: bool,
 ) -> None:
+    """Copy SOURCE_FILE(s) to TARGET_DIRECTORY, for archival purposes.
+
+    For any SOURCE_FILE which are directories ending in '/.', their contents will be copied, not the directory itself.
+    Any files which would be placed in the same folder with the same name, and would therefore overwrite one another, will be handled specially. The oldest of each group of duplicate files will be selected. The newest of each group of files with the same destination will keep the existing filename. Older non-duplicate files with the same destination will be renamed based on their timestamp. This results in not losing data due to the copy.
+
+    The `fclones` tool is required for duplicate file detection.
+    """
     debug = verbosity == Verbosity.Debug
     verbose = verbosity in [Verbosity.Verbose, Verbosity.Debug]
     quiet = verbosity == Verbosity.Quiet

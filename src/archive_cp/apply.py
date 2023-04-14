@@ -19,6 +19,7 @@ def transition_state(
     dry_run: bool,
     log: Callable[[str], None],
 ) -> None:
+    """Apply the change in state from old to new to the target diretory."""
     in_target, external = [], []
     for newname, path in new_state.items():
         if is_relative_to(path, target_directory):

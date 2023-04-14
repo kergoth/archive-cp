@@ -27,7 +27,8 @@ def prepare_file_operations(
     sources: Mapping[pathlib.Path, pathlib.Path],
     ignore_case: bool,
     quiet: bool,
-) -> Generator[FileOperation, None, None,]:
+) -> Generator[FileOperation, None, None]:
+    """Gather files, preparing the file operations to be performed given our rules."""
     grouped = duplicate_groups(sources, target_directory, ignore_case, quiet)
     for relpath, groups in grouped.items():
         destdir = target_directory / relpath.parent
@@ -62,6 +63,7 @@ def prepare_file_operations(
 def deduplicate(
     group: Sequence[pathlib.Path], target_directory: pathlib.Path, timefunc: TimeFunc
 ) -> Tuple[pathlib.Path, List[pathlib.Path]]:
+    """Sort a group of files, selecting the oldest to keep in a consistent way."""
     # Sort by path
     group = sorted(group)
     # Sort files already in the target directory to the beginning
@@ -78,6 +80,7 @@ def deduplicate(
 def unique_names(
     paths: Sequence[pathlib.Path], timefunc: TimeFunc
 ) -> Tuple[Dict[pathlib.Path, pathlib.Path], Sequence[pathlib.Path]]:
+    """Ensure that the path filenames are as unique as possible."""
     uniques: Dict[pathlib.Path, pathlib.Path] = {}
     by_name: MutableMapping[
         pathlib.Path, MutableSequence[pathlib.Path]
@@ -112,6 +115,11 @@ def increase_uniqueness(
     uniques: Dict[pathlib.Path, pathlib.Path],
     namefunc: Callable[[pathlib.Path, pathlib.Path], pathlib.Path],
 ) -> None:
+    """Increase uniqueness for non-unique filenames, tracking those remaining.
+
+    This function mutates the by_name and uniques arguments.
+    """
+
     for newname, paths in list(by_name.items()):
         some_unique, new_by_name = unique_names_by(
             paths, lambda p: namefunc(p, newname)
@@ -136,6 +144,7 @@ def unique_names_by(
     Mapping[pathlib.Path, pathlib.Path],
     Mapping[pathlib.Path, MutableSequence[pathlib.Path]],
 ]:
+    """Determine unique and non-unique paths after calling namefunc to adjust the filenames."""
     by_newname = collections.defaultdict(list)
     for path in paths:
         newname = namefunc(path)
@@ -157,10 +166,12 @@ def add_time_stem_suffix(
     timefunc: TimeFunc,
     format: str = "%Y%m%dT%H%M%S",
 ) -> pathlib.Path:
+    """Add a timestamp suffix to the path's stem."""
     timestr = timefunc(path).strftime(format)
     return pathlib.Path(f"{name.stem}.{timestr}{name.suffix}")
 
 
 def add_chksum_stem_suffix(path: pathlib.Path, name: pathlib.Path) -> pathlib.Path:
+    """Add a checksum suffix to the path's stem."""
     chksum = sha256sum(path)
     return pathlib.Path(f"{name.stem}.{chksum[:8]}{name.suffix}")

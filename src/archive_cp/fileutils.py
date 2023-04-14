@@ -12,6 +12,7 @@ StrOrBytesPath: TypeAlias = str | bytes | os.PathLike[str] | os.PathLike[bytes]
 
 
 def sha256sum(filename: StrOrBytesPath) -> str:
+    """Return the SHA256 checksum of the specified file."""
     h = hashlib.sha256()
     b = bytearray(128 * 1024)
     mv = memoryview(b)
