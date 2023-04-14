@@ -4,6 +4,7 @@ end-before: <!-- github-only -->
 ---
 ```
 
+[codeofconduct]: codeofconduct
 [license]: license
 [contributor guide]: contributing
 [command-line reference]: usage
