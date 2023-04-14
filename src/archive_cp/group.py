@@ -54,12 +54,13 @@ def duplicate_groups(
 
 def fclones(files: List[pathlib.Path], suppress_err=False, args=None):
     if args is None:
-        args = ["-H", "-f", "fdupes", "--rf-over=0", "--min=0"]
+        args = ["-H", "--rf-over=0", "--min=0"]
 
     stderr = DEVNULL if suppress_err else None
     output = subprocess.check_output(
-        ["fclones", "group"] + args + [str(f) for f in files],
+        ["fclones", "group", "-f", "fdupes", "--stdin"] + args,
         stderr=stderr,
+        input="".join(str(f) + "\n" for f in files).encode("utf-8"),
     )
     return fclones_grouped(output.decode("utf-8"))
 
