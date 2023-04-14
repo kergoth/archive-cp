@@ -90,7 +90,7 @@ def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None
 
 
 def base_name(name: StrPath) -> pathlib.Path:
-    """Return the base name, undoing the timestamp suffixes resulting from this script."""
+    """Return the base name, undoing the suffixes resulting from this script."""
     for pattern in [ADJUSTED_FN_TIME_CHKSUM, ADJUSTED_FN_TIME]:
         m = pattern.match(str(name))
         if m:

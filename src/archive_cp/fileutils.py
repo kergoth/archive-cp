@@ -22,6 +22,11 @@ def sha256sum(filename: StrOrBytesPath) -> str:
 
 
 def copy_file(src: pathlib.Path, dst: pathlib.Path) -> None:
+    """Copy SRC to DST.
+
+    DST is renamed into place to ensure the operation is atomic, using an
+    intermediate temporary file.
+    """
     with tempfile.NamedTemporaryFile(
         prefix=src.name + ".", dir=dst.parent, delete=False
     ) as f:
@@ -38,6 +43,7 @@ def link_file(src: StrPath, dst: StrPath) -> None:
         os.link(src, dst, follow_symlinks=False)
     except OSError as exc:
         if exc.errno != errno.EXDEV:
+            # cross-device link not permitted
             raise
         else:
             shutil.copy2(src, dst, follow_symlinks=False)

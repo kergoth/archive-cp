@@ -27,7 +27,8 @@ class Verbosity(Enum):
 @click.option(
     "--file",
     "-f",
-    help="Read SOURCE_FILE paths from the specified FILE. '-' may be specified for standard input.",
+    help="Read SOURCE_FILE paths from the specified FILE."
+    "'-' may be specified for standard input.",
     type=click.File(),
 )
 @click.argument("target_directory", nargs=1, type=click.Path(path_type=pathlib.Path))
@@ -37,7 +38,7 @@ class Verbosity(Enum):
     "verbosity",
     is_flag=True,
     flag_value=Verbosity.Debug,
-    help="Cause cp to be more verbose, showing files as they are copied and files which are not copied.",
+    help="Cause cp to be more verbose, showing files as they are processed.",
     type=Verbosity,
 )
 @click.option(
@@ -79,7 +80,7 @@ def main(
 
     target_directory = target_directory.resolve()
     if file:
-        source_files = list(source_files) + [l.rstrip("\n") for l in file]
+        source_files = list(source_files) + [line.rstrip("\n") for line in file]
 
     sources = {}
     for orig_source in source_files:
@@ -98,7 +99,6 @@ def main(
         ignore_case,
         quiet,
     ):
-        # This should really be a debugging option, verbose generally shows what we're doing, not the opposite
         if debug:
             for path in unselected:
                 click.echo(f"skipped {path} (unselected duplicate)")
