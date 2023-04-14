@@ -1,9 +1,8 @@
 """Command-line interface."""
-import os
 import pathlib
-import sys
 from enum import Enum
-from typing import Sequence, TextIO
+from typing import Sequence
+from typing import TextIO
 
 import click
 

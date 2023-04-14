@@ -1,11 +1,17 @@
 import errno
 import hashlib
 import os
+import pathlib
 import shutil
 import tempfile
+from typing import TypeAlias
 
 
-def sha256sum(filename):
+StrPath: TypeAlias = str | os.PathLike[str]
+StrOrBytesPath: TypeAlias = str | bytes | os.PathLike[str] | os.PathLike[bytes]
+
+
+def sha256sum(filename: StrOrBytesPath) -> str:
     h = hashlib.sha256()
     b = bytearray(128 * 1024)
     mv = memoryview(b)
@@ -15,7 +21,7 @@ def sha256sum(filename):
     return h.hexdigest()
 
 
-def copy_file(src, dst):
+def copy_file(src: pathlib.Path, dst: pathlib.Path) -> None:
     with tempfile.NamedTemporaryFile(
         prefix=src.name + ".", dir=dst.parent, delete=False
     ) as f:
@@ -27,7 +33,7 @@ def copy_file(src, dst):
         os.rename(f.name, dst)
 
 
-def link_file(src, dst):
+def link_file(src: StrPath, dst: StrPath) -> None:
     try:
         os.link(src, dst, follow_symlinks=False)
     except OSError as exc:

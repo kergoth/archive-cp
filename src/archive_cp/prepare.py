@@ -1,7 +1,11 @@
 import collections
+import datetime
 import pathlib
+from typing import Callable, Dict, Generator, Mapping, MutableMapping, MutableSequence
 from typing import List
+from typing import Sequence
 from typing import Tuple
+from typing import TypeAlias
 
 from archive_cp.fileutils import sha256sum
 from archive_cp.group import base_name
@@ -10,11 +14,24 @@ from archive_cp.pathutils import is_relative_to
 from archive_cp.pathutils import mtime
 
 
-def prepare_file_operations(target_directory, sources, ignore_case, quiet):
+TimeFunc: TypeAlias = Callable[[pathlib.Path], datetime.datetime]
+DirectoryState: TypeAlias = Mapping[pathlib.Path, pathlib.Path]
+PathSequence: TypeAlias = Sequence[pathlib.Path]
+FileOperation: TypeAlias = Tuple[
+    pathlib.Path, PathSequence, DirectoryState, PathSequence
+]
+
+
+def prepare_file_operations(
+    target_directory: pathlib.Path,
+    sources: Mapping[pathlib.Path, pathlib.Path],
+    ignore_case: bool,
+    quiet: bool,
+) -> Generator[FileOperation, None, None,]:
     grouped = duplicate_groups(sources, target_directory, ignore_case, quiet)
     for relpath, groups in grouped.items():
         destdir = target_directory / relpath.parent
-        target_state = [
+        old_state = [
             p.relative_to(destdir)
             for g in groups
             for p in g
@@ -42,11 +59,11 @@ def prepare_file_operations(target_directory, sources, ignore_case, quiet):
         new_state.update(uniques)
         unselected.extend(discarded)
 
-        yield destdir, target_state, new_state, unselected
+        yield destdir, old_state, new_state, unselected
 
 
 def deduplicate(
-    group, target_directory, timefunc
+    group: Sequence[pathlib.Path], target_directory: pathlib.Path, timefunc: TimeFunc
 ) -> Tuple[pathlib.Path, List[pathlib.Path]]:
     # Sort by path
     group = sorted(group)
@@ -61,8 +78,14 @@ def deduplicate(
     return group[0], group[1:]
 
 
-def unique_names(paths, basename, timefunc):
-    uniques, by_name, discarded = {}, collections.defaultdict(list), []
+def unique_names(
+    paths: Sequence[pathlib.Path], basename: pathlib.Path, timefunc: TimeFunc
+) -> Tuple[Dict[pathlib.Path, pathlib.Path], Sequence[pathlib.Path]]:
+    uniques: Dict[pathlib.Path, pathlib.Path] = {}
+    by_name: MutableMapping[
+        pathlib.Path, MutableSequence[pathlib.Path]
+    ] = collections.defaultdict(list)
+    discarded: MutableSequence[pathlib.Path] = []
 
     # Group by the source file base name, not the normalized relpath,
     # thereby ensuring we don't force everything to lowercase.
@@ -88,19 +111,22 @@ def unique_names(paths, basename, timefunc):
     return uniques, discarded
 
 
-def increase_uniqueness(by_name, uniques, namefunc):
+def increase_uniqueness(
+    by_name: MutableMapping[pathlib.Path, MutableSequence[pathlib.Path]],
+    uniques: Dict[pathlib.Path, pathlib.Path],
+    namefunc: Callable[[pathlib.Path, pathlib.Path], pathlib.Path],
+) -> None:
     for newname, paths in list(by_name.items()):
         some_unique, new_by_name = unique_names_by(
             paths, lambda p: namefunc(p, newname)
         )
-        if True or some_unique:
-            uniques.update(some_unique)
-            by_name[newname] = []
-            for _newname, _paths in new_by_name.items():
-                if _newname in by_name:
-                    by_name[_newname].extend(_paths)
-                else:
-                    by_name[_newname] = _paths
+        uniques.update(some_unique)
+        by_name[newname] = []
+        for _newname, _paths in new_by_name.items():
+            if _newname in by_name:
+                by_name[_newname].extend(_paths)
+            else:
+                by_name[_newname] = _paths
 
     for newname in list(by_name):
         paths = by_name[newname]
@@ -108,7 +134,12 @@ def increase_uniqueness(by_name, uniques, namefunc):
             del by_name[newname]
 
 
-def unique_names_by(paths, namefunc):
+def unique_names_by(
+    paths: Sequence[pathlib.Path], namefunc: Callable[[pathlib.Path], pathlib.Path]
+) -> Tuple[
+    Mapping[pathlib.Path, pathlib.Path],
+    Mapping[pathlib.Path, MutableSequence[pathlib.Path]],
+]:
     by_newname = collections.defaultdict(list)
     for path in paths:
         newname = namefunc(path)
@@ -124,11 +155,16 @@ def unique_names_by(paths, namefunc):
     return unique, remaining
 
 
-def add_time_stem_suffix(path, name, timefunc, format="%Y%m%dT%H%M%S"):
+def add_time_stem_suffix(
+    path: pathlib.Path,
+    name: pathlib.Path,
+    timefunc: TimeFunc,
+    format: str = "%Y%m%dT%H%M%S",
+) -> pathlib.Path:
     timestr = timefunc(path).strftime(format)
     return pathlib.Path(f"{name.stem}.{timestr}{name.suffix}")
 
 
-def add_chksum_stem_suffix(path, name):
+def add_chksum_stem_suffix(path: pathlib.Path, name: pathlib.Path) -> pathlib.Path:
     chksum = sha256sum(path)
     return pathlib.Path(f"{name.stem}.{chksum[:8]}{name.suffix}")

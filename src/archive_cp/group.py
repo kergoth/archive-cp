@@ -5,9 +5,14 @@ import os
 import pathlib
 import re
 import subprocess
+from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Mapping
+from typing import Optional
+from typing import Sequence
 
+from archive_cp.fileutils import StrPath
 from archive_cp.pathutils import is_relative_to
 
 
@@ -21,9 +26,9 @@ ADJUSTED_FN_TIME_CHKSUM = re.compile(
 def duplicate_groups(
     sources: Mapping[pathlib.Path, pathlib.Path],
     target: pathlib.Path,
-    ignore_case=False,
-    quiet=False,
-) -> Mapping[pathlib.Path, List[pathlib.Path]]:
+    ignore_case: bool = False,
+    quiet: bool = False,
+) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
     by_dest = collections.defaultdict(list)
     paths = sources.keys()
     grouped = fclones(paths, suppress_err=quiet)
@@ -52,7 +57,11 @@ def duplicate_groups(
     return by_dest
 
 
-def fclones(files: List[pathlib.Path], suppress_err=False, args=None):
+def fclones(
+    files: Iterable[pathlib.Path],
+    suppress_err: bool = False,
+    args: Optional[List[str]] = None,
+) -> Generator[Sequence[pathlib.Path], None, None]:
     if args is None:
         args = ["-H", "--rf-over=0", "--min=0"]
 
@@ -65,8 +74,8 @@ def fclones(files: List[pathlib.Path], suppress_err=False, args=None):
     return fclones_grouped(output.decode("utf-8"))
 
 
-def fclones_grouped(output):
-    block = []
+def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None]:
+    block: List[pathlib.Path] = []
     for line in output.splitlines():
         line = line.rstrip("\r\n")
         if not line:
@@ -80,7 +89,7 @@ def fclones_grouped(output):
         yield block
 
 
-def base_name(name):
+def base_name(name: StrPath) -> Optional[str]:
     """Return the base name, undoing the timestamp suffixes resulting from this script."""
     for pattern in [ADJUSTED_FN_TIME_CHKSUM, ADJUSTED_FN_TIME]:
         m = pattern.match(str(name))
@@ -89,9 +98,12 @@ def base_name(name):
                 return m.group(1) + m.group(2)
             else:
                 return m.group(1)
+    return None
 
 
-def file_destination(filepath, sources):
+def file_destination(
+    filepath: pathlib.Path, sources: Mapping[pathlib.Path, pathlib.Path]
+) -> pathlib.Path:
     if filepath in sources:
         return sources[filepath]
     else:

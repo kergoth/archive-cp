@@ -1,6 +1,7 @@
 import os
 import pathlib
 import tempfile
+from typing import Callable
 from typing import Mapping
 from typing import Sequence
 
@@ -16,7 +17,7 @@ def transition_state(
     verbose: bool,
     debug: bool,
     dry_run: bool,
-    log,
+    log: Callable[[str], None],
 ) -> None:
     in_target, external = [], []
     for newname, path in new_state.items():
