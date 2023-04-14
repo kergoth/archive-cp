@@ -3,7 +3,7 @@ import os
 import pathlib
 import sys
 from enum import Enum
-from typing import Sequence
+from typing import Sequence, TextIO
 
 import click
 
@@ -24,6 +24,12 @@ class Verbosity(Enum):
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument(
     "source_files", nargs=-1, metavar="[SOURCE_FILE]...", type=click.Path(exists=True)
+)
+@click.option(
+    "--file",
+    "-f",
+    help="Read SOURCE_FILE paths from the specified FILE. '-' may be specified for standard input.",
+    type=click.File(),
 )
 @click.argument("target_directory", nargs=1, type=click.Path(path_type=pathlib.Path))
 @click.option(
@@ -63,6 +69,7 @@ class Verbosity(Enum):
 def main(
     source_files: Sequence[str],
     target_directory: pathlib.Path,
+    file: TextIO,
     verbosity: Verbosity,
     dry_run: bool,
     ignore_case: bool,
@@ -72,6 +79,9 @@ def main(
     quiet = verbosity == Verbosity.Quiet
 
     target_directory = target_directory.resolve()
+    if file:
+        source_files = list(source_files) + [l.rstrip("\n") for l in file]
+
     sources = {}
     for orig_source in source_files:
         source = pathlib.Path(orig_source).resolve()
