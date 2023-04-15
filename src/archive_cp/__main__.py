@@ -81,8 +81,15 @@ def main(
 ) -> None:
     """Copy SOURCE_FILE(s) to TARGET_DIRECTORY, for archival purposes.
 
-    For any SOURCE_FILE which are directories ending in '/.', their contents will be copied, not the directory itself.
-    Any files which would be placed in the same folder with the same name, and would therefore overwrite one another, will be handled specially. The oldest of each group of duplicate files will be selected. The newest of each group of files with the same destination will keep the existing filename. Older non-duplicate files with the same destination will be renamed based on their timestamp. This results in not losing data due to the copy.
+    For any SOURCE_FILE which are directories ending in '/.', their contents
+    will be copied, not the directory itself.q
+
+    Any files which would be placed in the same folder with the same name, and
+    would therefore overwrite one another, will be handled specially. The oldest
+    of each group of duplicate files will be selected. The newest of each group
+    of files with the same destination will keep the existing filename. Older
+    non-duplicate files with the same destination will be renamed based on their
+    timestamp. This results in not losing data due to the copy.
 
     The `fclones` tool is required for duplicate file detection.
     """

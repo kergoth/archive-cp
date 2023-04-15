@@ -30,7 +30,7 @@ def duplicate_groups(
     file_destination: Callable[[pathlib.Path], pathlib.Path],
     ignore_case: bool = False,
 ) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
-    """Run fclones on the source paths, returning groups of paths by relative destination path."""
+    """Run fclones on the source paths, grouping by relative destination path."""
     by_relpath = collections.defaultdict(list)
     for group in dupes:
         # Regroup within a set of duplicates, by relative destination path
@@ -73,7 +73,10 @@ def fclones(
 
 
 def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None]:
-    """Parse the output of fclones using 'fdupes' format into a list of groups of file paths."""
+    """Parse the output of fclones into a list of groups of file paths.
+
+    Command output is assumed to be in 'fdupes' format.
+    """
     block: List[pathlib.Path] = []
     for line in output.splitlines():
         line = line.rstrip("\r\n")

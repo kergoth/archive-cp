@@ -1,3 +1,4 @@
+"""Functions for operating on files."""
 import errno
 import hashlib
 import os
@@ -40,6 +41,7 @@ def copy_file(src: pathlib.Path, dst: pathlib.Path) -> None:
 
 
 def link_file(src: StrPath, dst: StrPath) -> None:
+    """Link SRC to DST, copying if they cannot be linked."""
     try:
         os.link(src, dst, follow_symlinks=False)
     except OSError as exc:

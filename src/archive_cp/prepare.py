@@ -1,3 +1,4 @@
+"""Prepare our grouped paths into a form we can apply to the target directory."""
 import collections
 import datetime
 import pathlib
@@ -120,11 +121,14 @@ def increase_uniqueness(
 
     This function mutates the by_name and uniques arguments.
     """
-
     for newname, paths in list(by_name.items()):
-        some_unique, new_by_name = unique_names_by(
-            paths, lambda p: namefunc(p, newname)
-        )
+
+        def new_namefunc(
+            path: pathlib.Path, newname: pathlib.Path = newname
+        ) -> pathlib.Path:
+            return namefunc(path, newname)
+
+        some_unique, new_by_name = unique_names_by(paths, new_namefunc)
         uniques.update(some_unique)
         by_name[newname] = []
         for _newname, _paths in new_by_name.items():
@@ -145,7 +149,7 @@ def unique_names_by(
     Mapping[pathlib.Path, pathlib.Path],
     Mapping[pathlib.Path, MutableSequence[pathlib.Path]],
 ]:
-    """Determine unique and non-unique paths after calling namefunc to adjust the filenames."""
+    """Determine unique and non-unique paths after adjusting the filenames."""
     by_newname = collections.defaultdict(list)
     for path in paths:
         newname = namefunc(path)
