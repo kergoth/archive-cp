@@ -30,7 +30,7 @@ def duplicate_groups(
     quiet: bool = False,
 ) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
     """Run fclones on the source paths, returning groups of paths by relative destination path."""
-    by_dest = collections.defaultdict(list)
+    by_relpath = collections.defaultdict(list)
     paths = sources.keys()
     grouped = fclones(paths, suppress_err=quiet)
     for group in grouped:
@@ -38,21 +38,21 @@ def duplicate_groups(
         regrouped = collections.defaultdict(list)
         for item in group:
             if is_relative_to(item, target_directory):
-                dest = base_name(item.relative_to(target_directory))
+                relpath = base_name(item.relative_to(target_directory))
             else:
-                dest = file_destination(item, sources).relative_to(target_directory)
+                relpath = file_destination(item, sources).relative_to(target_directory)
 
             if ignore_case:
-                normalized = pathlib.Path(str(dest).lower())
+                normalized = pathlib.Path(str(relpath).lower())
                 regrouped[normalized].append(item)
             else:
-                regrouped[dest].append(item)
+                regrouped[relpath].append(item)
 
-        # Collect groups of duplicates by dest
-        for dest, items in regrouped.items():
-            by_dest[dest].append(items)
+        # Collect groups of duplicates by relpath
+        for relpath, items in regrouped.items():
+            by_relpath[relpath].append(items)
 
-    return by_dest
+    return by_relpath
 
 
 def fclones(
