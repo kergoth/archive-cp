@@ -39,7 +39,7 @@ def duplicate_groups(
             if is_relative_to(item, target_directory):
                 relpath = base_name(item.relative_to(target_directory))
             else:
-                relpath = file_destination(item).relative_to(target_directory)
+                relpath = file_destination(item)
 
             if ignore_case:
                 normalized = Path(str(relpath).lower())

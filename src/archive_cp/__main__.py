@@ -101,16 +101,17 @@ def main(
     if file:
         source_files = list(source_files) + [line.rstrip("\n") for line in file]
 
+    here = Path(".")
     sources = {}
     for orig_source in source_files:
         source = Path(orig_source).resolve()
         if source.is_dir() and orig_source.endswith("/."):
-            sources[source] = target_directory
+            sources[source] = here
         else:
-            sources[source] = target_directory / source.name
+            sources[source] = Path(source.name)
 
     if target_directory.exists():
-        sources[target_directory] = target_directory
+        sources[target_directory] = here
 
     dupes = fclones(sources.keys(), suppress_err=quiet)
     grouped = duplicate_groups(
