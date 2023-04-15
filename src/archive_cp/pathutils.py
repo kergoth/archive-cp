@@ -1,7 +1,7 @@
 """Functions for operating on file paths."""
 import datetime
 import os
-import pathlib
+from pathlib import Path
 
 
 def is_relative_to(path: os.PathLike[str], directory: os.PathLike[str]) -> bool:
@@ -9,7 +9,7 @@ def is_relative_to(path: os.PathLike[str], directory: os.PathLike[str]) -> bool:
     return str(path).startswith(str(directory) + "/")
 
 
-def mtime(path: pathlib.Path) -> datetime.datetime:
+def mtime(path: Path) -> datetime.datetime:
     """Return the modification time of a path as a datetime object.
 
     Assumes a timezone of utc, not the current timezone.

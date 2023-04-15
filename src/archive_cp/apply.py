@@ -1,7 +1,7 @@
 """Apply file operations to the target directory."""
 import os
-import pathlib
 import tempfile
+from pathlib import Path
 from typing import Callable
 from typing import Mapping
 from typing import Sequence
@@ -13,9 +13,9 @@ from archive_cp.pathutils import is_relative_to
 
 
 def transition_state(
-    target_directory: pathlib.Path,
-    old_state: Sequence[pathlib.Path],
-    new_state: Mapping[pathlib.Path, pathlib.Path],
+    target_directory: Path,
+    old_state: Sequence[Path],
+    new_state: Mapping[Path, Path],
     verbose: bool,
     debug: bool,
     dry_run: bool,
@@ -73,8 +73,8 @@ def transition_state(
 
 
 def rename_postponed(
-    postponed: Sequence[Tuple[pathlib.Path, pathlib.Path]],
-    target_directory: pathlib.Path,
+    postponed: Sequence[Tuple[Path, Path]],
+    target_directory: Path,
 ) -> None:
     """Rename target paths appropriately without conflict.
 
@@ -84,7 +84,7 @@ def rename_postponed(
     with tempfile.TemporaryDirectory(dir=target_directory) as tempdir:
         postponed_temp = []
         for dest, path in postponed:
-            tmpfile = pathlib.Path(tempdir) / dest.name
+            tmpfile = Path(tempdir) / dest.name
             link_file(path, tmpfile)
             postponed_temp.append((tmpfile, dest))
 

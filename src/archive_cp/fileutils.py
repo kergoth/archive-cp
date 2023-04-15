@@ -2,9 +2,9 @@
 import errno
 import hashlib
 import os
-import pathlib
 import shutil
 import tempfile
+from pathlib import Path
 from typing import TypeAlias
 
 
@@ -23,7 +23,7 @@ def sha256sum(filename: StrOrBytesPath) -> str:
     return h.hexdigest()
 
 
-def copy_file(src: pathlib.Path, dst: pathlib.Path) -> None:
+def copy_file(src: Path, dst: Path) -> None:
     """Copy SRC to DST.
 
     DST is renamed into place to ensure the operation is atomic, using an

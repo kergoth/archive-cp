@@ -2,9 +2,9 @@
 
 import collections
 import os
-import pathlib
 import re
 import subprocess
+from pathlib import Path
 from typing import Callable
 from typing import Generator
 from typing import Iterable
@@ -25,11 +25,11 @@ ADJUSTED_FN_TIME_CHKSUM = re.compile(
 
 
 def duplicate_groups(
-    target_directory: pathlib.Path,
-    dupes: Iterable[Iterable[pathlib.Path]],
-    file_destination: Callable[[pathlib.Path], pathlib.Path],
+    target_directory: Path,
+    dupes: Iterable[Iterable[Path]],
+    file_destination: Callable[[Path], Path],
     ignore_case: bool = False,
-) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
+) -> Mapping[Path, List[List[Path]]]:
     """Run fclones on the source paths, grouping by relative destination path."""
     by_relpath = collections.defaultdict(list)
     for group in dupes:
@@ -42,7 +42,7 @@ def duplicate_groups(
                 relpath = file_destination(item).relative_to(target_directory)
 
             if ignore_case:
-                normalized = pathlib.Path(str(relpath).lower())
+                normalized = Path(str(relpath).lower())
                 regrouped[normalized].append(item)
             else:
                 regrouped[relpath].append(item)
@@ -55,10 +55,10 @@ def duplicate_groups(
 
 
 def fclones(
-    files: Iterable[pathlib.Path],
+    files: Iterable[Path],
     suppress_err: bool = False,
     args: Optional[List[str]] = None,
-) -> Generator[Sequence[pathlib.Path], None, None]:
+) -> Generator[Sequence[Path], None, None]:
     """Run fclones on the specified files, returning a list of groups of file paths."""
     if args is None:
         args = ["-H", "--rf-over=0", "--min=0"]
@@ -72,12 +72,12 @@ def fclones(
     return fclones_grouped(output.decode("utf-8"))
 
 
-def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None]:
+def fclones_grouped(output: str) -> Generator[Sequence[Path], None, None]:
     """Parse the output of fclones into a list of groups of file paths.
 
     Command output is assumed to be in 'fdupes' format.
     """
-    block: List[pathlib.Path] = []
+    block: List[Path] = []
     for line in output.splitlines():
         line = line.rstrip("\r\n")
         if not line:
@@ -85,13 +85,13 @@ def fclones_grouped(output: str) -> Generator[Sequence[pathlib.Path], None, None
                 yield block
             block.clear()
         else:
-            block.append(pathlib.Path(line))
+            block.append(Path(line))
 
     if block:
         yield block
 
 
-def base_name(name: StrPath) -> pathlib.Path:
+def base_name(name: StrPath) -> Path:
     """Return the base name, undoing the suffixes resulting from this script."""
     for pattern in [ADJUSTED_FN_TIME_CHKSUM, ADJUSTED_FN_TIME]:
         m = pattern.match(str(name))
@@ -100,12 +100,10 @@ def base_name(name: StrPath) -> pathlib.Path:
                 name = m.group(1) + m.group(2)
             else:
                 name = m.group(1)
-    return pathlib.Path(name)
+    return Path(name)
 
 
-def file_destination(
-    filepath: pathlib.Path, sources: Mapping[pathlib.Path, pathlib.Path]
-) -> pathlib.Path:
+def file_destination(filepath: Path, sources: Mapping[Path, Path]) -> Path:
     """Determine the appropriate destination for a given filepath, obeying sources."""
     if filepath in sources:
         return sources[filepath]

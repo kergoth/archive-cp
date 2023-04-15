@@ -1,6 +1,6 @@
 """Command-line interface."""
-import pathlib
 from enum import Enum
+from pathlib import Path
 from typing import Sequence
 from typing import TextIO
 
@@ -36,7 +36,7 @@ class Verbosity(Enum):
     "'-' may be specified for standard input.",
     type=click.File(),
 )
-@click.argument("target_directory", nargs=1, type=click.Path(path_type=pathlib.Path))
+@click.argument("target_directory", nargs=1, type=click.Path(path_type=Path))
 @click.option(
     "--debug",
     "-d",
@@ -73,7 +73,7 @@ class Verbosity(Enum):
 @click.version_option(package_name="archive_cp")
 def main(
     source_files: Sequence[str],
-    target_directory: pathlib.Path,
+    target_directory: Path,
     file: TextIO,
     verbosity: Verbosity,
     dry_run: bool,
@@ -103,7 +103,7 @@ def main(
 
     sources = {}
     for orig_source in source_files:
-        source = pathlib.Path(orig_source).resolve()
+        source = Path(orig_source).resolve()
         if source.is_dir() and orig_source.endswith("/."):
             sources[source] = target_directory
         else:
