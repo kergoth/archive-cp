@@ -25,7 +25,7 @@ ADJUSTED_FN_TIME_CHKSUM = re.compile(
 
 def duplicate_groups(
     sources: Mapping[pathlib.Path, pathlib.Path],
-    target: pathlib.Path,
+    target_directory: pathlib.Path,
     ignore_case: bool = False,
     quiet: bool = False,
 ) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
@@ -37,13 +37,13 @@ def duplicate_groups(
         # Regroup within a set of duplicates, by relative destination path
         regrouped = collections.defaultdict(list)
         for item in group:
-            if is_relative_to(item, target):
-                dest = item.relative_to(target)
+            if is_relative_to(item, target_directory):
+                dest = item.relative_to(target_directory)
                 adjusted = base_name(dest)
                 if adjusted:
                     dest = pathlib.Path(adjusted)
             else:
-                dest = file_destination(item, sources).relative_to(target)
+                dest = file_destination(item, sources).relative_to(target_directory)
 
             if ignore_case:
                 normalized = pathlib.Path(str(dest).lower())
