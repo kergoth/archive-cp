@@ -38,10 +38,7 @@ def duplicate_groups(
         regrouped = collections.defaultdict(list)
         for item in group:
             if is_relative_to(item, target_directory):
-                dest = item.relative_to(target_directory)
-                adjusted = base_name(dest)
-                if adjusted:
-                    dest = pathlib.Path(adjusted)
+                dest = base_name(item.relative_to(target_directory))
             else:
                 dest = file_destination(item, sources).relative_to(target_directory)
 
