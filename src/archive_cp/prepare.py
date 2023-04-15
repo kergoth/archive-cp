@@ -41,18 +41,23 @@ def prepare_file_operations(
         unselected = []
 
         files = []
+        file_times: Dict[Path, datetime.datetime] = {}
+        timefunc = lambda f: file_times[f]
         for group in groups:
+            for f in group:
+                file_times[f] = mtime(f)
+
             if len(group) > 1:
-                selected, group_unselected = deduplicate(group, destdir, timefunc=mtime)
+                selected, group_unselected = deduplicate(group, destdir, timefunc)
                 files.append(selected)
                 unselected.extend(group_unselected)
             else:
                 files.append(group[0])
 
-        by_mtime = list(sorted(files, key=lambda f: mtime(f), reverse=True))
+        by_mtime = sorted(files, key=timefunc, reverse=True)
         newest = by_mtime[0]
 
-        uniques, discarded = unique_names(by_mtime[1:], timefunc=mtime)
+        uniques, discarded = unique_names(by_mtime[1:], timefunc=timefunc)
         new_state = {base_name(newest.name): newest}
         new_state.update(uniques)
         unselected.extend(discarded)
