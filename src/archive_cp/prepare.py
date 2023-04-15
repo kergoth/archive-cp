@@ -14,7 +14,6 @@ from typing import TypeAlias
 
 from archive_cp.fileutils import sha256sum
 from archive_cp.group import base_name
-from archive_cp.group import duplicate_groups
 from archive_cp.pathutils import is_relative_to
 from archive_cp.pathutils import mtime
 
@@ -29,12 +28,9 @@ FileOperation: TypeAlias = Tuple[
 
 def prepare_file_operations(
     target_directory: pathlib.Path,
-    sources: Mapping[pathlib.Path, pathlib.Path],
-    ignore_case: bool,
-    quiet: bool,
+    grouped: Mapping[pathlib.Path, List[List[pathlib.Path]]],
 ) -> Generator[FileOperation, None, None]:
     """Gather files, preparing the file operations to be performed given our rules."""
-    grouped = duplicate_groups(sources, target_directory, ignore_case, quiet)
     for relpath, groups in grouped.items():
         destdir = target_directory / relpath.parent
         old_state = [

@@ -1,3 +1,4 @@
+"""Apply file operations to the target directory."""
 import os
 import pathlib
 import tempfile

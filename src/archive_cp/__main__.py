@@ -7,6 +7,9 @@ from typing import TextIO
 import click
 
 from archive_cp.apply import transition_state
+from archive_cp.group import duplicate_groups
+from archive_cp.group import fclones
+from archive_cp.group import file_destination
 from archive_cp.prepare import prepare_file_operations
 
 
@@ -102,19 +105,22 @@ def main(
     if target_directory.exists():
         sources[target_directory] = target_directory
 
-    for destdir, old_state, new_state, unselected in prepare_file_operations(
+    dupes = fclones(sources.keys(), suppress_err=quiet)
+    grouped = duplicate_groups(
         target_directory,
-        sources,
+        dupes,
+        lambda path: file_destination(path, sources),
         ignore_case,
-        quiet,
+    )
+    for destdir, old, new, unselected in prepare_file_operations(
+        target_directory,
+        grouped,
     ):
         if debug:
             for path in unselected:
                 click.echo(f"skipped {path} (unselected duplicate)")
 
-        transition_state(
-            destdir, old_state, new_state, verbose, debug, dry_run, log=click.echo
-        )
+        transition_state(destdir, old, new, verbose, debug, dry_run, log=click.echo)
 
 
 if __name__ == "__main__":

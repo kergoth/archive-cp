@@ -5,6 +5,7 @@ import os
 import pathlib
 import re
 import subprocess
+from typing import Callable
 from typing import Generator
 from typing import Iterable
 from typing import List
@@ -24,23 +25,21 @@ ADJUSTED_FN_TIME_CHKSUM = re.compile(
 
 
 def duplicate_groups(
-    sources: Mapping[pathlib.Path, pathlib.Path],
     target_directory: pathlib.Path,
+    dupes: Iterable[Iterable[pathlib.Path]],
+    file_destination: Callable[[pathlib.Path], pathlib.Path],
     ignore_case: bool = False,
-    quiet: bool = False,
 ) -> Mapping[pathlib.Path, List[List[pathlib.Path]]]:
     """Run fclones on the source paths, returning groups of paths by relative destination path."""
     by_relpath = collections.defaultdict(list)
-    paths = sources.keys()
-    grouped = fclones(paths, suppress_err=quiet)
-    for group in grouped:
+    for group in dupes:
         # Regroup within a set of duplicates, by relative destination path
         regrouped = collections.defaultdict(list)
         for item in group:
             if is_relative_to(item, target_directory):
                 relpath = base_name(item.relative_to(target_directory))
             else:
-                relpath = file_destination(item, sources).relative_to(target_directory)
+                relpath = file_destination(item).relative_to(target_directory)
 
             if ignore_case:
                 normalized = pathlib.Path(str(relpath).lower())
