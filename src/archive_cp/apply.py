@@ -32,7 +32,7 @@ def transition_state(
             elif newname in old_state:
                 postponed.append((dest, path))
                 if debug:
-                    log(f"postponed '{path}' ({dest} already present)")
+                    log(f"postponed '{path}' ({dest} already exists)")
             else:
                 in_target.append((dest, path))
         else:
