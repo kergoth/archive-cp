@@ -1,6 +1,7 @@
 """Command-line interface."""
 from enum import Enum
 from pathlib import Path
+import shlex
 from typing import Sequence
 from typing import TextIO
 
@@ -70,6 +71,7 @@ class Verbosity(Enum):
 @click.option(
     "--ignore-case", "-i", is_flag=True, help="Ignore case in grouping files."
 )
+@click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.")
 @click.version_option(package_name="archive_cp")
 def main(
     source_files: Sequence[str],
@@ -78,6 +80,7 @@ def main(
     verbosity: Verbosity,
     dry_run: bool,
     ignore_case: bool,
+    fclones_args: str,
 ) -> None:
     """Copy SOURCE_FILE(s) to TARGET_DIRECTORY, for archival purposes.
 
@@ -113,7 +116,9 @@ def main(
     if target_directory.exists():
         sources[target_directory] = here
 
-    dupes = fclones(sources.keys(), suppress_err=quiet)
+    dupes = fclones(
+        sources.keys(), suppress_err=quiet, extra_args=shlex.split(fclones_args)
+    )
     grouped = duplicate_groups(
         target_directory,
         dupes,

@@ -57,15 +57,25 @@ def duplicate_groups(
 def fclones(
     files: Iterable[Path],
     suppress_err: bool = False,
-    args: Optional[List[str]] = None,
+    extra_args: Optional[List[str]] = None,
 ) -> Generator[Sequence[Path], None, None]:
     """Run fclones on the specified files, returning a list of groups of file paths."""
-    if args is None:
-        args = ["-H", "--rf-over=0", "--min=0"]
-
     stderr = DEVNULL if suppress_err else None
+    cmd = [
+        "fclones",
+        "group",
+        "-f",
+        "fdupes",
+        "--stdin",
+        "-H",
+        "--rf-over=0",
+        "--min=0",
+    ]
+    if extra_args:
+        cmd += extra_args
+
     output = subprocess.check_output(
-        ["fclones", "group", "-f", "fdupes", "--stdin"] + args,
+        cmd,
         stderr=stderr,
         input="".join(str(f) + "\n" for f in files).encode("utf-8"),
     )
