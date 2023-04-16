@@ -13,7 +13,7 @@ from typing import Sequence
 from typing import Tuple
 from typing import TypeAlias
 
-from archive_cp.fileutils import sha256sum
+from archive_cp.fileutils import sha256sum, zip_chksum
 from archive_cp.group import base_name
 from archive_cp.pathutils import is_relative_to
 from archive_cp.pathutils import mtime
@@ -78,7 +78,9 @@ def deduplicate(
 
 
 def unique_names(
-    paths: Sequence[Path], timefunc: TimeFunc
+    paths: Sequence[Path],
+    timefunc: TimeFunc,
+    ignore_case: bool = False,
 ) -> Tuple[Dict[Path, Path], Sequence[Path]]:
     """Ensure that the path filenames are as unique as possible."""
     uniques: Dict[Path, Path] = {}
@@ -93,7 +95,9 @@ def unique_names(
     increase_uniqueness(
         by_name, uniques, lambda p, n: add_time_stem_suffix(p, n, timefunc)
     )
-    increase_uniqueness(by_name, uniques, add_chksum_stem_suffix)
+    increase_uniqueness(
+        by_name, uniques, lambda p, n: add_chksum_stem_suffix(p, n, ignore_case)
+    )
 
     # Check for remaining non-unique paths with the same mtime and chksum
     for newname, paths in by_name.items():
@@ -167,7 +171,14 @@ def add_time_stem_suffix(
     return Path(f"{name.stem}.{timestr}{name.suffix}")
 
 
-def add_chksum_stem_suffix(path: Path, name: Path) -> Path:
+def add_chksum_stem_suffix(path: Path, name: Path, ignore_case: bool = False) -> Path:
     """Add a checksum suffix to the path's stem."""
-    chksum = sha256sum(path)
+    extension = path.suffix.lower() if ignore_case else path.suffix
+    if extension == ".zip":
+        chksum, _ = zip_chksum(path)
+        if not chksum:
+            chksum = sha256sum(path)
+    else:
+        chksum = sha256sum(path)
+
     return Path(f"{name.stem}.{chksum[:8]}{name.suffix}")

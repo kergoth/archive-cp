@@ -5,7 +5,8 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from typing import TypeAlias
+from typing import Optional, Tuple, TypeAlias
+import zipfile
 
 
 StrPath: TypeAlias = str | os.PathLike[str]
@@ -21,6 +22,27 @@ def sha256sum(filename: StrOrBytesPath) -> str:
         while n := f.readinto(mv):
             h.update(mv[:n])
     return h.hexdigest()
+
+
+def zip_chksum(
+    source_file: Path, ignore_case: bool = False
+) -> Tuple[Optional[str], Optional[str]]:
+    """Return a checksum based upon zip file contents."""
+    md5 = hashlib.md5()
+
+    try:
+        archive = zipfile.ZipFile(source_file)
+    except zipfile.BadZipFile:
+        return None, f"Bad zip file: {source_file}"
+
+    for info in archive.infolist():
+        fname = info.filename
+        chkname = fname.lower() if ignore_case else fname
+        md5.update(chkname.encode("utf-8"))
+        md5.update(info.CRC.to_bytes(4, "big"))
+        md5.update(str(info.date_time).encode("utf-8"))
+
+    return md5.hexdigest(), None
 
 
 def copy_file(src: Path, dst: Path) -> None:
