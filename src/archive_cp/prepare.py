@@ -42,7 +42,10 @@ def prepare_file_operations(
 
         files = []
         file_times: Dict[Path, datetime.datetime] = {}
-        timefunc = lambda f: file_times[f]
+
+        def timefunc(f: Path) -> datetime.datetime:
+            return file_times[f]
+
         for group in groups:
             for f in group:
                 file_times[f] = mtime(f)
@@ -176,10 +179,12 @@ def add_time_stem_suffix(
     return Path(f"{name.stem}.{timestr}{name.suffix}")
 
 
-def add_chksum_stem_suffix(path: Path, name: Path, ignore_case: bool = False) -> Path:
+def add_chksum_stem_suffix(
+    path: Path, name: Path, ignore_case: bool = False, enable_zip: bool = False
+) -> Path:
     """Add a checksum suffix to the path's stem."""
     extension = path.suffix.lower() if ignore_case else path.suffix
-    if extension == ".zip":
+    if enable_zip and extension == ".zip":
         chksum, _ = zip_chksum(path)
         if not chksum:
             chksum = sha256sum(path)
