@@ -69,7 +69,6 @@ def fclones(
         "--stdin",
         "-H",
         "--rf-over=0",
-        "--min=0",
     ]
     if extra_args:
         cmd += extra_args
