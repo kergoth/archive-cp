@@ -16,6 +16,7 @@ def transition_state(
     target_directory: Path,
     old_state: Sequence[Path],
     new_state: Mapping[Path, Path],
+    symlink: bool,
     verbose: bool,
     debug: bool,
     dry_run: bool,
@@ -57,7 +58,10 @@ def transition_state(
         if not dry_run:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.unlink(missing_ok=True)
-            copy_file(path, dest)
+            if symlink:
+                dest.symlink_to(path)
+            else:
+                copy_file(path, dest)
 
         if verbose or dry_run:
             log(f"'{path}' -> '{dest}'")

@@ -71,6 +71,9 @@ class Verbosity(Enum):
 @click.option(
     "--ignore-case", "-i", is_flag=True, help="Ignore case in grouping files."
 )
+@click.option(
+    "--symlink", "-s", is_flag=True, help="Create symbolic links rather than copying files."
+)
 @click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.")
 @click.version_option(package_name="archive_cp")
 def main(
@@ -80,6 +83,7 @@ def main(
     verbosity: Verbosity,
     dry_run: bool,
     ignore_case: bool,
+    symlink: bool,
     fclones_args: str,
 ) -> None:
     """Copy SOURCE_FILE(s) to TARGET_DIRECTORY, for archival purposes.
@@ -133,7 +137,7 @@ def main(
             for path in unselected:
                 click.echo(f"skipped {path} (unselected duplicate)")
 
-        transition_state(destdir, old, new, verbose, debug, dry_run, log=click.echo)
+        transition_state(destdir, old, new, symlink, verbose, debug, dry_run, log=click.echo)
 
 
 if __name__ == "__main__":
