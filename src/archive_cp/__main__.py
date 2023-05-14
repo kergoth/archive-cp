@@ -72,7 +72,7 @@ class Verbosity(Enum):
     "--ignore-case", "-i", is_flag=True, help="Ignore case in grouping files."
 )
 @click.option(
-    "--symlink", "-s", is_flag=True, help="Create symbolic links rather than copying files."
+    "--symlink", "-s", is_flag=True, help="Create symbolic links rather than copying or hard linking."
 )
 @click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.")
 @click.version_option(package_name="archive_cp")
