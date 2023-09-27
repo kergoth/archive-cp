@@ -1,18 +1,14 @@
 """Command-line interface."""
+import shlex
 from enum import Enum
 from pathlib import Path
-import shlex
-from typing import Sequence
-from typing import TextIO
+from typing import Sequence, TextIO
 
 import click
 
 from archive_cp.apply import transition_state
-from archive_cp.group import duplicate_groups
-from archive_cp.group import fclones
-from archive_cp.group import file_destination
+from archive_cp.group import duplicate_groups, fclones, file_destination
 from archive_cp.prepare import prepare_file_operations
-
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -72,7 +68,10 @@ class Verbosity(Enum):
     "--ignore-case", "-i", is_flag=True, help="Ignore case in grouping files."
 )
 @click.option(
-    "--symlink", "-s", is_flag=True, help="Create symbolic links rather than copying or hard linking."
+    "--symlink",
+    "-s",
+    is_flag=True,
+    help="Create symbolic links rather than copying or hard linking.",
 )
 @click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.")
 @click.version_option(package_name="archive_cp")
@@ -137,7 +136,9 @@ def main(
             for path in unselected:
                 click.echo(f"skipped {path} (unselected duplicate)")
 
-        transition_state(destdir, old, new, symlink, verbose, debug, dry_run, log=click.echo)
+        transition_state(
+            destdir, old, new, symlink, verbose, debug, dry_run, log=click.echo
+        )
 
 
 if __name__ == "__main__":

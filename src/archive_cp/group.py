@@ -5,23 +5,13 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Callable
-from typing import Generator
-from typing import Iterable
-from typing import List
-from typing import Mapping
-from typing import Optional
-from typing import Sequence
+from typing import Callable, Generator, Iterable, List, Mapping, Optional, Sequence
 
-from archive_cp.fileutils import StrPath
+from archive_cp.fileutils import StrPath, sha256sum
 from archive_cp.pathutils import is_relative_to
 
-
 DEVNULL = os.open(os.devnull, os.O_WRONLY)
-ADJUSTED_FN_TIME = re.compile(r"^(.*)\.[0-9]{8}T[0-9]{6}(\.[^.]+)?$")
-ADJUSTED_FN_TIME_CHKSUM = re.compile(
-    r"^(.*)\.[0-9]{8}T[0-9]{6}\.[0-9a-zA-Z]{8}(\.[^.]+)?$"
-)
+ADJUSTED_FN_CHKSUM = re.compile(r"^(.*)\.([0-9a-zA-Z]{8})(\.[^.]+)?$")
 
 
 def duplicate_groups(
@@ -37,7 +27,7 @@ def duplicate_groups(
         regrouped = collections.defaultdict(list)
         for item in group:
             if is_relative_to(item, target_directory):
-                relpath = base_name(item.relative_to(target_directory))
+                relpath = base_name(item.relative_to(target_directory), item)
             else:
                 relpath = file_destination(item)
 
@@ -100,15 +90,13 @@ def fclones_grouped(output: str) -> Generator[Sequence[Path], None, None]:
         yield block
 
 
-def base_name(name: StrPath) -> Path:
+def base_name(name: StrPath, path: StrPath) -> Path:
     """Return the base name, undoing the suffixes resulting from this script."""
-    for pattern in [ADJUSTED_FN_TIME_CHKSUM, ADJUSTED_FN_TIME]:
-        m = pattern.match(str(name))
-        if m:
-            if m.group(2):
-                name = m.group(1) + m.group(2)
-            else:
-                name = m.group(1)
+    m = ADJUSTED_FN_CHKSUM.match(str(name))
+    if m:
+        prefix, chksum, suffix = m.group(1), m.group(2), m.group(3)
+        if chksum and sha256sum(path)[:8] == chksum:
+            name = prefix + suffix
     return Path(name)
 
 

@@ -2,22 +2,22 @@
 import collections
 import datetime
 from pathlib import Path
-from typing import Callable
-from typing import Dict
-from typing import Generator
-from typing import List
-from typing import Mapping
-from typing import MutableMapping
-from typing import MutableSequence
-from typing import Sequence
-from typing import Tuple
-from typing import TypeAlias
+from typing import (
+    Callable,
+    Dict,
+    Generator,
+    List,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+    Tuple,
+    TypeAlias,
+)
 
 from archive_cp.fileutils import sha256sum, zip_chksum
 from archive_cp.group import base_name
-from archive_cp.pathutils import is_relative_to
-from archive_cp.pathutils import mtime
-
+from archive_cp.pathutils import is_relative_to, mtime
 
 TimeFunc: TypeAlias = Callable[[Path], datetime.datetime]
 DirectoryState: TypeAlias = Mapping[Path, Path]
@@ -61,7 +61,7 @@ def prepare_file_operations(
         newest = by_mtime[0]
 
         uniques, discarded = unique_names(by_mtime[1:], timefunc=timefunc)
-        new_state = {base_name(newest.name): newest}
+        new_state = {base_name(newest.name, newest): newest}
         new_state.update(uniques)
         unselected.extend(discarded)
 
@@ -98,11 +98,8 @@ def unique_names(
     # Group by the source file base name, not the normalized relpath,
     # thereby ensuring we don't force everything to lowercase.
     for path in paths:
-        by_name[base_name(path.name)].append(path)
+        by_name[base_name(path.name, path)].append(path)
 
-    increase_uniqueness(
-        by_name, uniques, lambda p, n: add_time_stem_suffix(p, n, timefunc)
-    )
     increase_uniqueness(
         by_name, uniques, lambda p, n: add_chksum_stem_suffix(p, n, ignore_case)
     )
@@ -166,17 +163,6 @@ def unique_names_by(
             remaining[newname] = newpaths
 
     return unique, remaining
-
-
-def add_time_stem_suffix(
-    path: Path,
-    name: Path,
-    timefunc: TimeFunc,
-    format: str = "%Y%m%dT%H%M%S",
-) -> Path:
-    """Add a timestamp suffix to the path's stem."""
-    timestr = timefunc(path).strftime(format)
-    return Path(f"{name.stem}.{timestr}{name.suffix}")
 
 
 def add_chksum_stem_suffix(
