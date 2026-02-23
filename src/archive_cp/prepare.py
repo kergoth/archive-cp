@@ -9,9 +9,6 @@ from collections.abc import MutableMapping
 from collections.abc import MutableSequence
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Dict
-from typing import List
-from typing import Tuple
 from typing import TypeAlias
 
 from archive_cp.fileutils import sha256sum

@@ -6,7 +6,6 @@ from collections.abc import Callable
 from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Tuple
 
 from archive_cp.fileutils import copy_file
 from archive_cp.fileutils import link_file

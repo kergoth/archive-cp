@@ -10,8 +10,6 @@ from collections.abc import Iterable
 from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
-from typing import List
-from typing import Optional
 
 from archive_cp.fileutils import StrPath
 from archive_cp.fileutils import sha256sum
