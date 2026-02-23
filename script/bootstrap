@@ -5,26 +5,9 @@ set -euo pipefail
 scriptdir="$(cd "$(dirname "$0")" && pwd -P)"
 cd "$(dirname "$scriptdir")"
 
-found=0
-for PYTHON in python3 python; do
-    if command -v "$PYTHON" &>/dev/null && "$PYTHON" -V &>/dev/null; then
-        found=1
-        break
-    fi
-done
-if [ $found -eq 0 ]; then
-    echo >&2 "Error: python not found"
+if ! command -v uv &>/dev/null; then
+    echo >&2 "Error: uv not found. Install from https://docs.astral.sh/uv/getting-started/installation/"
     exit 1
 fi
 
-USER_BIN="$($PYTHON -c 'import os,site,sys; print("{}\\Python{}{}\\Scripts".format(site.getuserbase(), sys.version_info[0], sys.version_info[1]) if os.name == "nt" else "{}/bin".format(site.getuserbase()))')"
-PATH="$USER_BIN:$PATH"
-
-if [ -z "$VIRTUAL_ENV" ]; then
-    set -- --user
-else
-    set -- --prefix "$VIRTUAL_ENV"
-fi
-
-$PYTHON -m pip --disable-pip-version-check install --quiet "$@" poetry nox nox-poetry
-poetry install
+uv sync
