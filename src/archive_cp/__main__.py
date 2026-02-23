@@ -73,7 +73,8 @@ class Verbosity(Enum):
     is_flag=True,
     help="Create symbolic links rather than copying or hard linking.",
 )
-@click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.")
+@click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.",
+              default="")
 @click.version_option(package_name="archive_cp")
 def main(
     source_files: Sequence[str],
@@ -88,7 +89,7 @@ def main(
     """Copy SOURCE_FILE(s) to TARGET_DIRECTORY, for archival purposes.
 
     For any SOURCE_FILE which are directories ending in '/.', their contents
-    will be copied, not the directory itself.q
+    will be copied, not the directory itself.
 
     Any files which would be placed in the same folder with the same name, and
     would therefore overwrite one another, will be handled specially. The oldest
@@ -142,4 +143,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(prog_name="archive-cp")  # pragma: no cover
+    main(prog_name="archive-cp")  # pragma: no cover # type: ignore
