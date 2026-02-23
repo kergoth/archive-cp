@@ -1,52 +1,61 @@
-[tool.poetry]
+[project]
 name = "archive-cp"
 version = "1.0.0"
 description = "Archive Cp"
-authors = ["Christopher Larson <kergoth@gmail.com>"]
-license = "MIT"
+authors = [{ name = "Christopher Larson", email = "kergoth@gmail.com" }]
+requires-python = ">=3.7"
 readme = "README.md"
-homepage = "https://github.com/kergoth/archive-cp"
-repository = "https://github.com/kergoth/archive-cp"
-documentation = "https://archive-cp.readthedocs.io"
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
+dependencies = ["click>=8.0.1"]
 
-[tool.poetry.urls]
+[project.urls]
+Homepage = "https://github.com/kergoth/archive-cp"
+Repository = "https://github.com/kergoth/archive-cp"
+Documentation = "https://archive-cp.readthedocs.io"
 Changelog = "https://github.com/kergoth/archive-cp/releases"
 
-[tool.poetry.dependencies]
-python = "^3.7"
-click = ">=8.0.1"
-
-[tool.poetry.dev-dependencies]
-Pygments = ">=2.10.0"
-bandit = ">=1.7.4"
-black = ">=21.10b0"
-coverage = {extras = ["toml"], version = ">=6.2"}
-darglint = ">=1.8.1"
-flake8 = ">=4.0.1"
-flake8-bugbear = ">=21.9.2"
-flake8-docstrings = ">=1.6.0"
-flake8-rst-docstrings = ">=0.2.5"
-furo = ">=2021.11.12"
-isort = ">=5.10.1"
-mypy = ">=0.930"
-pep8-naming = ">=0.12.1"
-pre-commit = ">=2.16.0"
-pre-commit-hooks = ">=4.1.0"
-pytest = ">=6.2.5"
-pyupgrade = ">=2.29.1"
-safety = ">=1.10.3"
-sphinx = ">=4.3.2"
-sphinx-autobuild = ">=2021.3.14"
-sphinx-click = ">=3.0.2"
-typeguard = ">=2.13.3"
-xdoctest = {extras = ["colors"], version = ">=0.15.10"}
-myst-parser = {version = ">=0.16.1"}
-
-[tool.poetry.scripts]
+[project.scripts]
 archive-cp = "archive_cp.__main__:main"
+
+[dependency-groups]
+dev = [
+    "Pygments>=2.10.0",
+    "bandit>=1.7.4",
+    "black>=21.10b0",
+    "coverage[toml]>=6.2",
+    "darglint>=1.8.1",
+    "flake8>=4.0.1",
+    "flake8-bugbear>=21.9.2",
+    "flake8-docstrings>=1.6.0",
+    "flake8-rst-docstrings>=0.2.5",
+    "furo>=2021.11.12",
+    "isort>=5.10.1",
+    "mypy>=0.930",
+    "pep8-naming>=0.12.1",
+    "pre-commit>=2.16.0",
+    "pre-commit-hooks>=4.1.0",
+    "pytest>=6.2.5",
+    "pyupgrade>=2.29.1",
+    "safety>=1.10.3",
+    "sphinx>=4.3.2",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-click>=3.0.2",
+    "typeguard>=2.13.3",
+    "xdoctest[colors]>=0.15.10",
+    "myst-parser>=0.16.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
 
 [tool.bandit]
 # Subprocess is used with care, disable B404, B603
@@ -78,7 +87,3 @@ warn_unreachable = true
 pretty = true
 show_column_numbers = true
 show_error_context = true
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
