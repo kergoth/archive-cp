@@ -12,7 +12,7 @@ from archive_cp.fileutils import link_file
 from archive_cp.pathutils import is_relative_to
 
 
-def transition_state(
+def transition_state(  # noqa: C901
     target_directory: Path,
     old_state: Sequence[Path],
     new_state: Mapping[Path, Path],
@@ -66,7 +66,9 @@ def transition_state(
         if verbose or dry_run:
             log(f"'{path}' -> '{dest}'")
 
-    to_remove = set(old_state) - set(new_state.keys()) - {v for k, v in in_target}
+    to_remove = (
+        set(old_state) - set(new_state.keys()) - {v for k, v in in_target}
+    )
     for path in to_remove:
         if path.exists():
             if not dry_run:

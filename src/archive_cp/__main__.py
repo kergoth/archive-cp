@@ -29,7 +29,10 @@ class Verbosity(Enum):
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.argument(
-    "source_files", nargs=-1, metavar="[SOURCE_FILE]...", type=click.Path(exists=True)
+    "source_files",
+    nargs=-1,
+    metavar="[SOURCE_FILE]...",
+    type=click.Path(exists=True),
 )
 @click.option(
     "--file",
@@ -67,7 +70,10 @@ class Verbosity(Enum):
     type=Verbosity,
 )
 @click.option(
-    "--dry-run", "-n", is_flag=True, help="Dry run. Cause cp to pretend to copy files."
+    "--dry-run",
+    "-n",
+    is_flag=True,
+    help="Dry run. Cause cp to pretend to copy files.",
 )
 @click.option(
     "--ignore-case", "-i", is_flag=True, help="Ignore case in grouping files."
@@ -79,7 +85,10 @@ class Verbosity(Enum):
     help="Create symbolic links rather than copying or hard linking.",
 )
 @click.option(
-    "--fclones-args", "-F", help="Additional arguments for 'fclones group'.", default=""
+    "--fclones-args",
+    "-F",
+    help="Additional arguments for 'fclones group'.",
+    default="",
 )
 @click.version_option(package_name="archive_cp")
 def main(

@@ -21,7 +21,9 @@ from archive_cp.pathutils import mtime
 TimeFunc: TypeAlias = Callable[[Path], datetime.datetime]
 DirectoryState: TypeAlias = Mapping[Path, Path]
 PathSequence: TypeAlias = Sequence[Path]
-FileOperation: TypeAlias = tuple[Path, PathSequence, DirectoryState, PathSequence]
+FileOperation: TypeAlias = tuple[
+    Path, PathSequence, DirectoryState, PathSequence
+]
 
 
 def prepare_file_operations(
@@ -52,7 +54,9 @@ def prepare_file_operations(
                 file_times[f] = mtime(f)
 
             if len(group) > 1:
-                selected, group_unselected = deduplicate(group, destdir, timefunc)
+                selected, group_unselected = deduplicate(
+                    group, destdir, timefunc
+                )
                 files.append(selected)
                 unselected.extend(group_unselected)
             else:
@@ -93,7 +97,9 @@ def unique_names(
 ) -> tuple[dict[Path, Path], Sequence[Path]]:
     """Ensure that the path filenames are as unique as possible."""
     uniques: dict[Path, Path] = {}
-    by_name: MutableMapping[Path, MutableSequence[Path]] = collections.defaultdict(list)
+    by_name: MutableMapping[Path, MutableSequence[Path]] = (
+        collections.defaultdict(list)
+    )
     discarded: MutableSequence[Path] = []
 
     # Group by the source file base name, not the normalized relpath,

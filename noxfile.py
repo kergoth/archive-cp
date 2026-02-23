@@ -33,15 +33,9 @@ def precommit(session: nox.Session) -> None:
     ]
     session.install(
         "bandit",
-        "black",
-        "flake8",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "isort",
-        "pep8-naming",
         "pre-commit",
         "pre-commit-hooks",
-        "pyupgrade",
+        "ruff",
     )
     session.run("pre-commit", *args)
 
@@ -54,7 +48,9 @@ def mypy(session: nox.Session) -> None:
     session.install("mypy", "pytest")
     session.run("mypy", *args)
     if not session.posargs:
-        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
+        session.run(
+            "mypy", f"--python-executable={sys.executable}", "noxfile.py"
+        )
 
 
 @nox.session(python=python_versions)
@@ -63,7 +59,9 @@ def tests(session: nox.Session) -> None:
     session.install(".")
     session.install("coverage[toml]", "pytest", "pygments")
     try:
-        session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
+        session.run(
+            "coverage", "run", "--parallel", "-m", "pytest", *session.posargs
+        )
     finally:
         if session.interactive:
             session.notify("coverage", posargs=[])
@@ -127,7 +125,9 @@ def docs(session: nox.Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = session.posargs or ["--open-browser", "docs", "docs/_build"]
     session.install(".")
-    session.install("sphinx", "sphinx-autobuild", "sphinx-click", "furo", "myst-parser")
+    session.install(
+        "sphinx", "sphinx-autobuild", "sphinx-click", "furo", "myst-parser"
+    )
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():

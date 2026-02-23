@@ -5,5 +5,4 @@ set -euo pipefail
 scriptdir="$(cd "$(dirname "$0")" && pwd -P)"
 cd "$(dirname "$scriptdir")"
 
-uv run black ./*/
-uv run isort ./*/
+uv run ruff format .
