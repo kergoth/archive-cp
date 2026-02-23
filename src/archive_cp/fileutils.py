@@ -29,7 +29,7 @@ def zip_chksum(
     source_file: Path, ignore_case: bool = False
 ) -> tuple[str | None, str | None]:
     """Return a checksum based upon zip file contents."""
-    md5 = hashlib.md5()
+    md5 = hashlib.md5(usedforsecurity=False)  # nosec B324
 
     try:
         archive = zipfile.ZipFile(source_file)
