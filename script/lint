@@ -5,4 +5,4 @@ set -euo pipefail
 scriptdir="$(cd "$(dirname "$0")" && pwd -P)"
 cd "$(dirname "$scriptdir")"
 
-poetry run flake8 ./**/*.py
+uv run flake8 ./**/*.py
