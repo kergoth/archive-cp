@@ -43,7 +43,9 @@ def prepare_file_operations(
         files = []
         file_times: Dict[Path, datetime.datetime] = {}
 
-        def timefunc(f: Path) -> datetime.datetime:
+        def timefunc(f: Path,
+                     file_times: Dict[Path,
+                        datetime.datetime] = file_times) -> datetime.datetime:
             return file_times[f]
 
         for group in groups:
