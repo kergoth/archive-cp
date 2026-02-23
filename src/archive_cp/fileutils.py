@@ -67,8 +67,8 @@ def link_file(src: StrPath, dst: StrPath) -> None:
     try:
         os.link(src, dst, follow_symlinks=False)
     except OSError as exc:
-        if exc.errno != errno.EXDEV:
-            # cross-device link not permitted
+        if exc.errno not in [errno.EXDEV, errno.ENOTSUP]:
+            # cross-device link not permitted or operation not supported
             raise
         else:
             shutil.copy2(src, dst, follow_symlinks=False)
