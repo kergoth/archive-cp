@@ -1,14 +1,19 @@
 """Command-line interface."""
+
 import shlex
+from collections.abc import Sequence
 from enum import Enum
 from pathlib import Path
-from typing import Sequence, TextIO
+from typing import TextIO
 
 import click
 
 from archive_cp.apply import transition_state
-from archive_cp.group import duplicate_groups, fclones, file_destination
+from archive_cp.group import duplicate_groups
+from archive_cp.group import fclones
+from archive_cp.group import file_destination
 from archive_cp.prepare import prepare_file_operations
+
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -73,8 +78,9 @@ class Verbosity(Enum):
     is_flag=True,
     help="Create symbolic links rather than copying or hard linking.",
 )
-@click.option("--fclones-args", "-F", help="Additional arguments for 'fclones group'.",
-              default="")
+@click.option(
+    "--fclones-args", "-F", help="Additional arguments for 'fclones group'.", default=""
+)
 @click.version_option(package_name="archive_cp")
 def main(
     source_files: Sequence[str],

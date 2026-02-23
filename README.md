@@ -75,7 +75,6 @@ This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter]
 [codecov]: https://app.codecov.io/gh/kergoth/archive-cp
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
-
 [@cjolowicz]: https://github.com/cjolowicz
 [pypi]: https://pypi.org/
 [hypermodern python cookiecutter]: https://github.com/cjolowicz/cookiecutter-hypermodern-python

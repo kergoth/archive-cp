@@ -4,11 +4,19 @@ import collections
 import os
 import re
 import subprocess
+from collections.abc import Callable
+from collections.abc import Generator
+from collections.abc import Iterable
+from collections.abc import Mapping
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable, Generator, Iterable, List, Mapping, Optional, Sequence
+from typing import List
+from typing import Optional
 
-from archive_cp.fileutils import StrPath, sha256sum
+from archive_cp.fileutils import StrPath
+from archive_cp.fileutils import sha256sum
 from archive_cp.pathutils import is_relative_to
+
 
 DEVNULL = os.open(os.devnull, os.O_WRONLY)
 ADJUSTED_FN_CHKSUM = re.compile(r"^(.*)\.([0-9a-zA-Z]{8})(\.[^.]+)?$")
@@ -19,7 +27,7 @@ def duplicate_groups(
     dupes: Iterable[Iterable[Path]],
     file_destination: Callable[[Path], Path],
     ignore_case: bool = False,
-) -> Mapping[Path, List[List[Path]]]:
+) -> Mapping[Path, list[list[Path]]]:
     """Run fclones on the source paths, grouping by relative destination path."""
     by_relpath = collections.defaultdict(list)
     for group in dupes:
@@ -47,7 +55,7 @@ def duplicate_groups(
 def fclones(
     files: Iterable[Path],
     suppress_err: bool = False,
-    extra_args: Optional[List[str]] = None,
+    extra_args: list[str] | None = None,
 ) -> Generator[Sequence[Path], None, None]:
     """Run fclones on the specified files, returning a list of groups of file paths."""
     stderr = DEVNULL if suppress_err else None
@@ -76,7 +84,7 @@ def fclones_grouped(output: str) -> Generator[Sequence[Path], None, None]:
 
     Command output is assumed to be in 'fdupes' format.
     """
-    block: List[Path] = []
+    block: list[Path] = []
     for line in output.splitlines():
         line = line.rstrip("\r\n")
         if not line:

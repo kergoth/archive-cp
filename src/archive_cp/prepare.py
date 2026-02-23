@@ -1,33 +1,35 @@
 """Prepare our grouped paths into a form we can apply to the target directory."""
+
 import collections
 import datetime
+from collections.abc import Callable
+from collections.abc import Generator
+from collections.abc import Mapping
+from collections.abc import MutableMapping
+from collections.abc import MutableSequence
+from collections.abc import Sequence
 from pathlib import Path
-from typing import (
-    Callable,
-    Dict,
-    Generator,
-    List,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-    Tuple,
-    TypeAlias,
-)
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import TypeAlias
 
-from archive_cp.fileutils import sha256sum, zip_chksum
+from archive_cp.fileutils import sha256sum
+from archive_cp.fileutils import zip_chksum
 from archive_cp.group import base_name
-from archive_cp.pathutils import is_relative_to, mtime
+from archive_cp.pathutils import is_relative_to
+from archive_cp.pathutils import mtime
+
 
 TimeFunc: TypeAlias = Callable[[Path], datetime.datetime]
 DirectoryState: TypeAlias = Mapping[Path, Path]
 PathSequence: TypeAlias = Sequence[Path]
-FileOperation: TypeAlias = Tuple[Path, PathSequence, DirectoryState, PathSequence]
+FileOperation: TypeAlias = tuple[Path, PathSequence, DirectoryState, PathSequence]
 
 
 def prepare_file_operations(
     target_directory: Path,
-    grouped: Mapping[Path, List[List[Path]]],
+    grouped: Mapping[Path, list[list[Path]]],
 ) -> Generator[FileOperation, None, None]:
     """Gather files, preparing the file operations to be performed given our rules."""
     for relpath, groups in grouped.items():
@@ -41,11 +43,11 @@ def prepare_file_operations(
         unselected = []
 
         files = []
-        file_times: Dict[Path, datetime.datetime] = {}
+        file_times: dict[Path, datetime.datetime] = {}
 
-        def timefunc(f: Path,
-                     file_times: Dict[Path,
-                        datetime.datetime] = file_times) -> datetime.datetime:
+        def timefunc(
+            f: Path, file_times: dict[Path, datetime.datetime] = file_times
+        ) -> datetime.datetime:
             return file_times[f]
 
         for group in groups:
@@ -72,7 +74,7 @@ def prepare_file_operations(
 
 def deduplicate(
     group: Sequence[Path], target_directory: Path, timefunc: TimeFunc
-) -> Tuple[Path, List[Path]]:
+) -> tuple[Path, list[Path]]:
     """Sort a group of files, selecting the oldest to keep in a consistent way."""
     # Sort by path
     group = sorted(group)
@@ -91,9 +93,9 @@ def unique_names(
     paths: Sequence[Path],
     timefunc: TimeFunc,
     ignore_case: bool = False,
-) -> Tuple[Dict[Path, Path], Sequence[Path]]:
+) -> tuple[dict[Path, Path], Sequence[Path]]:
     """Ensure that the path filenames are as unique as possible."""
-    uniques: Dict[Path, Path] = {}
+    uniques: dict[Path, Path] = {}
     by_name: MutableMapping[Path, MutableSequence[Path]] = collections.defaultdict(list)
     discarded: MutableSequence[Path] = []
 
@@ -121,7 +123,7 @@ def unique_names(
 
 def increase_uniqueness(
     by_name: MutableMapping[Path, MutableSequence[Path]],
-    uniques: Dict[Path, Path],
+    uniques: dict[Path, Path],
     namefunc: Callable[[Path, Path], Path],
 ) -> None:
     """Increase uniqueness for non-unique filenames, tracking those remaining.
@@ -150,7 +152,7 @@ def increase_uniqueness(
 
 def unique_names_by(
     paths: Sequence[Path], namefunc: Callable[[Path], Path]
-) -> Tuple[Mapping[Path, Path], Mapping[Path, MutableSequence[Path]]]:
+) -> tuple[Mapping[Path, Path], Mapping[Path, MutableSequence[Path]]]:
     """Determine unique and non-unique paths after adjusting the filenames."""
     by_newname = collections.defaultdict(list)
     for path in paths:

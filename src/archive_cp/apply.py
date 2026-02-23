@@ -1,10 +1,11 @@
 """Apply file operations to the target directory."""
+
 import os
 import tempfile
+from collections.abc import Callable
+from collections.abc import Mapping
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Callable
-from typing import Mapping
-from typing import Sequence
 from typing import Tuple
 
 from archive_cp.fileutils import copy_file
@@ -77,7 +78,7 @@ def transition_state(
 
 
 def rename_postponed(
-    postponed: Sequence[Tuple[Path, Path]],
+    postponed: Sequence[tuple[Path, Path]],
     target_directory: Path,
 ) -> None:
     """Rename target paths appropriately without conflict.

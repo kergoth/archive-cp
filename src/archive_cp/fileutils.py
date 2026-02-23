@@ -1,12 +1,15 @@
 """Functions for operating on files."""
+
 import errno
 import hashlib
 import os
 import shutil
 import tempfile
-from pathlib import Path
-from typing import Optional, Tuple, TypeAlias
 import zipfile
+from pathlib import Path
+from typing import Optional
+from typing import Tuple
+from typing import TypeAlias
 
 
 StrPath: TypeAlias = str | os.PathLike[str]
@@ -26,7 +29,7 @@ def sha256sum(filename: StrOrBytesPath) -> str:
 
 def zip_chksum(
     source_file: Path, ignore_case: bool = False
-) -> Tuple[Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None]:
     """Return a checksum based upon zip file contents."""
     md5 = hashlib.md5()
 

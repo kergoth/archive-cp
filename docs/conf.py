@@ -1,4 +1,5 @@
 """Sphinx configuration."""
+
 project = "Archive Cp"
 author = "Christopher Larson"
 copyright = "2023, Christopher Larson"

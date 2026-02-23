@@ -1,4 +1,5 @@
 """Functions for operating on file paths."""
+
 import datetime
 import os
 from pathlib import Path
