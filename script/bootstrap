@@ -20,5 +20,11 @@ fi
 USER_BIN="$($PYTHON -c 'import os,site,sys; print("{}\\Python{}{}\\Scripts".format(site.getuserbase(), sys.version_info[0], sys.version_info[1]) if os.name == "nt" else "{}/bin".format(site.getuserbase()))')"
 PATH="$USER_BIN:$PATH"
 
-$PYTHON -m pip --disable-pip-version-check install --quiet --user poetry nox nox-poetry
+if [ -z "$VIRTUAL_ENV" ]; then
+    set -- --user
+else
+    set -- --prefix "$VIRTUAL_ENV"
+fi
+
+$PYTHON -m pip --disable-pip-version-check install --quiet "$@" poetry nox nox-poetry
 poetry install
