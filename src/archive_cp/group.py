@@ -96,7 +96,7 @@ def base_name(name: StrPath, path: StrPath) -> Path:
     if m:
         prefix, chksum, suffix = m.group(1), m.group(2), m.group(3)
         if chksum and sha256sum(path)[:8] == chksum:
-            name = prefix + suffix
+            name = prefix + (suffix or "")
     return Path(name)
 
 
